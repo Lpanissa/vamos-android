@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "Vamos",
+    "slug": "vamos-android",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0f1720",
+    "android": { "package": "com.panissa.vamos" }
+  }
+}
