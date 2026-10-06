@@ -3,9 +3,9 @@
     "name": "Vamos",
     "slug": "vamos-android",
     "version": "1.0.0",
+    "scheme": "vamos",
     "orientation": "portrait",
-    "userInterfaceStyle": "dark",
-    "backgroundColor": "#0f1720",
+    "userInterfaceStyle": "automatic",
     "android": { "package": "com.panissa.vamos" }
   }
 }
