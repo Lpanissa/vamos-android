@@ -6,6 +6,14 @@
     "scheme": "vamos",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
-    "android": { "package": "com.panissa.vamos" }
+    "android": {
+      "package": "com.panissa.vamos"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "728dd62f-4edf-4893-aa37-cbb3373f9436"
+      }
+    },
+    "owner": "lpanissa"
   }
 }
