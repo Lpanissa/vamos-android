@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { View, Text, ScrollView, TouchableOpacity, Modal, Share, Alert, AppState, KeyboardAvoidingView, Platform, SafeAreaView, StatusBar, RefreshControl } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import { useC, Card, H, T, Row, Btn, Inp, Pill, Empty, Pick } from './ui';
-import { SB, KEY, REDIRECT, SITE, T_TRIPS, T_ROWS, lsGet, lsSet, ctx, api, authReq, authFrom, genCode, fmtCode, parseCode, buildS, strip, emptyS } from './lib';
+import { pickPhoto, SB, KEY, REDIRECT, SITE, T_TRIPS, T_ROWS, lsGet, lsSet, ctx, api, authReq, authFrom, genCode, fmtCode, parseCode, buildS, strip, emptyS } from './lib';
 import { Resumo, Amigos, Hosp, Cardapio, Transp, Convidar } from './screens';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -231,6 +231,7 @@ function ProfileCard({ g, p, role, auth, onSwitch }) {
   return (
     <Card c={c}><H c={c}>Perfil</H>
       <Inp c={c} label="Seu nome" value={name} onChangeText={setName} maxLength={40} />
+      <Btn c={c} small ghost label="Alterar minha foto" onPress={async () => { try { const ph = await pickPhoto(256); if (!ph) return; await g.delKey('avatar', p.id); await g.addOnce('avatar', { person: p.id, photo: ph }, p.id); g.toast('Foto salva ✓'); } catch (e) { g.toast('Não consegui salvar a foto.'); } }} />
       <Btn c={c} small label="Salvar nome" onPress={() => { const n = name.trim(); if (n) g.upd('people', p.id, { name: n }).then(() => g.toast('Nome salvo ✓')); }} />
       <Pick c={c} label="Transporte" value={role || 'nenhum'} onChange={k => g.upd('people', p.id, { role: k === 'nenhum' ? '' : k })} options={[['motorista', 'Sou motorista'], ['passageiro', 'Sou passageiro'], ['coletivo', 'Vou de coletivo'], ['aviao', 'Vou de avião'], ['nenhum', 'Nenhum']]} />
       {g.S.owner ? <T c={c} small muted>Você é {g.isOwner ? 'o criador do grupo' : (g.S.admins.some(a => a.person === p.id) ? 'administrador' : 'participante')}.</T> : null}

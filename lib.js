@@ -116,3 +116,15 @@ export function settle(bal) {
   while (i < de.length && j < cr.length) { const x = Math.min(de[i][1], cr[j][1]); out.push({ from: de[i][0], to: cr[j][0], v: x }); de[i][1] -= x; cr[j][1] -= x; if (de[i][1] < 0.01) i++; if (cr[j][1] < 0.01) j++; }
   return out;
 }
+
+/* foto da galeria -> data URL pequeno (igual ao app web) */
+export async function pickPhoto(max = 640) {
+  const IP = require('expo-image-picker'), IM = require('expo-image-manipulator');
+  const perm = await IP.requestMediaLibraryPermissionsAsync();
+  if (!perm.granted) return null;
+  const r = await IP.launchImageLibraryAsync({ mediaTypes: IP.MediaTypeOptions.Images, quality: 0.8 });
+  if (r.canceled || !r.assets || !r.assets[0]) return null;
+  const a = r.assets[0];
+  const out = await IM.manipulateAsync(a.uri, a.width > max ? [{ resize: { width: max } }] : [], { compress: 0.6, format: IM.SaveFormat.JPEG, base64: true });
+  return 'data:image/jpeg;base64,' + out.base64;
+}

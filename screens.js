@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Linking, Image, Alert } from 'react-native';
 import { Card, H, T, Row, Btn, Inp, Pill, Bar, KV, Empty, Pick } from './ui';
-import { brl, num, dayLabel, when, days, costs, settle, votesOf, stayLinks, CATS, KINDS, MEALS, maskMoney, maskDate, brToIso, isoToBr, maskTime, fmtCode, SITE } from './lib';
+import { pickPhoto, brl, num, dayLabel, when, days, costs, settle, votesOf, stayLinks, CATS, KINDS, MEALS, maskMoney, maskDate, brToIso, isoToBr, maskTime, fmtCode, SITE } from './lib';
 
 const catOpts = Object.entries(CATS);
 const confirmDel = (what, fn) => Alert.alert('Apagar', 'Apagar ' + what + '?', [{ text: 'Cancelar', style: 'cancel' }, { text: 'Apagar', style: 'destructive', onPress: fn }]);
@@ -179,6 +179,7 @@ export function Presenca({ g }) {
 export function Hosp({ g }) {
   const { c, S } = g; const n = S.people.length || 1, max = Math.max(1, ...S.stays.map(votesOf)); const t = S.trip;
   const [f, setF] = useState({ name: '', addr: '', links: '', price: '', beds: '', by: '', note: '' }); const set = k => v => setF(o => ({ ...o, [k]: v }));
+  const [fotos, setFotos] = useState([]);
   const sorted = [...S.stays].sort((a, b) => (b.booked ? 1 : 0) - (a.booked ? 1 : 0) || votesOf(b) - votesOf(a) || (a.at || 0) - (b.at || 0));
   return (
     <View style={{ gap: 12 }}>
@@ -191,7 +192,9 @@ export function Hosp({ g }) {
         <Inp c={c} label="Quartos / camas" value={f.beds} onChangeText={set('beds')} placeholder="Ex.: 3 quartos" />
         <PersonPick g={g} label="Quem reserva" value={f.by} onChange={set('by')} blank="Ainda não definido" />
         <Inp c={c} value={f.note} onChangeText={set('note')} placeholder="Observações: piscina, distância, regras…" multiline />
-        <Btn c={c} label="Adicionar à votação" onPress={() => { if (!f.name.trim()) return; g.add('stay', { name: f.name.trim(), links: f.links.split(/\s+/).map(x => x.trim()).filter(x => /^https?:\/\//i.test(x)), photos: [], addr: f.addr.trim(), price: num(f.price), beds: f.beds.trim(), paidBy: f.by, note: f.note.trim(), booked: false }); setF({ name: '', addr: '', links: '', price: '', beds: '', by: '', note: '' }); }} />
+        {fotos.length ? <Row wrap>{fotos.map((p, i) => <TouchableOpacity key={i} onPress={() => setFotos(fotos.filter((_, k) => k !== i))}><Image source={{ uri: p }} style={{ width: 72, height: 54, borderRadius: 8 }} /></TouchableOpacity>)}</Row> : null}
+        <Btn c={c} ghost small label={fotos.length ? 'Adicionar outra foto (toque na foto para remover)' : 'Adicionar foto'} onPress={async () => { try { const ph = await pickPhoto(); if (ph && fotos.length < 4) setFotos([...fotos, ph]); } catch (e) { g.toast('Não consegui abrir a foto.'); } }} />
+        <Btn c={c} label="Adicionar à votação" onPress={() => { if (!f.name.trim()) return; setFotos([]); g.add('stay', { name: f.name.trim(), links: f.links.split(/\s+/).map(x => x.trim()).filter(x => /^https?:\/\//i.test(x)), photos: fotos, addr: f.addr.trim(), price: num(f.price), beds: f.beds.trim(), paidBy: f.by, note: f.note.trim(), booked: false }); setF({ name: '', addr: '', links: '', price: '', beds: '', by: '', note: '' }); }} />
       </Card>
       {sorted.length ? sorted.map(s => { const v = votesOf(s), mine = g.me && s.votes && s.votes[g.me]; return (
         <Card c={c} key={s.id}>
